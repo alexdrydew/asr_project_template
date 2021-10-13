@@ -114,7 +114,7 @@ class BaseDataset(Dataset):
             exceeds_text_length = np.array(
                 [
                     len(BaseTextEncoder.normalize_text(el["text"]))
-                    for el in index]) <= max_text_length
+                    for el in index]) > max_text_length
             _total = exceeds_text_length.sum()
             logger.info(
                 f"{_total} ({_total / initial_size:.1%}) records are longer then "
