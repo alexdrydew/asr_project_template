@@ -21,7 +21,8 @@ class WanDBWriter:
             self.wandb = wandb
 
         except ImportError:
-            logger.warning("For use wandb install it via \n\t pip install wandb")
+            logger.error("For use wandb install it via \n\t pip install wandb")
+            raise
 
         self.step = 0
         self.mode = ""

@@ -1,11 +1,8 @@
 import json
 import unittest
-
-from hw_asr.utils.parse_config import ConfigParser
+from hw_asr.tests.conftest import config_parser
 
 
 class TestConfig(unittest.TestCase):
     def test_create(self):
-        configs = ConfigParser.get_default_configs()
-        print(json.dumps(configs.config, indent=2))
-        pass
+        print(json.dumps(config_parser.config, indent=2))

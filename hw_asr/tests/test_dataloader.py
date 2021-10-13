@@ -3,13 +3,14 @@ import unittest
 from hw_asr.collate_fn.collate import collate_fn
 from hw_asr.datasets import LibrispeechDataset
 from hw_asr.text_encoder.ctc_char_text_encoder import CTCCharTextEncoder
-from hw_asr.utils.parse_config import ConfigParser
+
+from hw_asr.tests.conftest import config_parser
 
 
 class TestDataloader(unittest.TestCase):
+
     def test_collate_fn(self):
         text_encoder = CTCCharTextEncoder.get_simple_alphabet()
-        config_parser = ConfigParser.get_default_configs()
 
         ds = LibrispeechDataset(
             "dev-clean", text_encoder=text_encoder, config_parser=config_parser
@@ -31,6 +32,12 @@ class TestDataloader(unittest.TestCase):
         # contains lengths of each text entry
         self.assertEqual(len(batch["text_encoded_length"].shape), 1)
         bs = batch["text_encoded_length"].shape[0]
+        self.assertEqual(bs, BS)
+
+        self.assertIn("spectrogram_length", batch)  # [int] torch.tensor
+        # contains lengths of each spectrogram entry
+        self.assertEqual(len(batch["spectrogram_length"].shape), 1)
+        bs = batch["spectrogram_length"].shape[0]
         self.assertEqual(bs, BS)
 
         self.assertIn("text", batch)  # List[str]
