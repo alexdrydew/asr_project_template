@@ -14,7 +14,13 @@ def collate_fn(dataset_items: List[dict]):
     Collate and pad fields in dataset items
     """
 
-    result_batch = {'spectrogram': [], 'text_encoded': [], 'text_encoded_length': None, 'text': None}
+    result_batch = {
+        'spectrogram': [],
+        'text_encoded': [],
+        'text_encoded_length': None,
+        'text': None,
+        'spectrogram_length': None
+    }
 
     spectrogram_length = tensor([item['spectrogram'].shape[-1] for item in dataset_items])
     result_batch['spectrogram_length'] = spectrogram_length

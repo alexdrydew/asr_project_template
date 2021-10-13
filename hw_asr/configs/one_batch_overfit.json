@@ -1,5 +1,5 @@
 {
-  "name": "default_config",
+  "name": "overfit_config",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000,
@@ -95,7 +95,7 @@
     "early_stop": 100,
     "visualize": "wandb",
     "wandb_project": "asr_project",
-    "len_epoch": 50,
+    "len_epoch": 100,
     "grad_norm_clip": 10
   }
 }
