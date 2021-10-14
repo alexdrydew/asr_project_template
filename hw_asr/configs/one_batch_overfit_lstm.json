@@ -14,10 +14,13 @@
     "spectrogram": []
   },
   "arch": {
-    "type": "BaselineModel",
+    "type": "SimpleLSTM",
     "args": {
       "n_feats": 128,
-      "fc_hidden": 512
+      "lstm_hidden": 512,
+      "fc_hidden": 512,
+      "lstm_layers": 2,
+      "fc_layers": 2
     }
   },
   "data": {
@@ -53,7 +56,7 @@
     }
   },
   "optimizer": {
-    "type": "SGD",
+    "type": "Adam",
     "args": {
       "lr": 3e-4
     }
