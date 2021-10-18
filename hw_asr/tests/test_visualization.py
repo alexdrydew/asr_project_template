@@ -1,17 +1,18 @@
-import shutil
 import unittest
-from pathlib import Path
-
-import PIL
 import numpy as np
 import torch
+import PIL
+import shutil
 import torchaudio
+
 from torchvision.transforms import ToTensor
+from pathlib import Path
 
 from hw_asr.logger.tensorboard import TensorboardWriter
 from hw_asr.logger.utils import plot_spectrogram_to_buf
 from hw_asr.logger.wandb import WanDBWriter
-from hw_asr.utils.parse_config import ConfigParser
+
+from hw_asr.tests.conftest import config_parser
 
 
 class TestVisualization(unittest.TestCase):
@@ -19,17 +20,16 @@ class TestVisualization(unittest.TestCase):
         log_dir = str(Path(__file__).parent / "logs_dir")
 
         try:
-            config = ConfigParser.get_default_configs()
-            logger = config.get_logger("test")
+            logger = config_parser.get_logger("test")
 
             tensorboard = TensorboardWriter(log_dir, logger, True)
-            wandb = WanDBWriter(config, logger)
+            wandb = WanDBWriter(config_parser, logger)
 
             audio_path = Path(__file__).parent.parent.parent / "test_data" / "audio" / "84-121550-0000.flac"
             audio, sr = torchaudio.load(audio_path)
 
-            wave2spec = config.init_obj(
-                config["preprocessing"]["spectrogram"],
+            wave2spec = config_parser.init_obj(
+                config_parser["preprocessing"]["spectrogram"],
                 torchaudio.transforms,
             )
 

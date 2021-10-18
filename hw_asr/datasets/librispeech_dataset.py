@@ -16,13 +16,13 @@ from hw_asr.utils.parse_config import ConfigParser
 logger = logging.getLogger(__name__)
 
 URL_LINKS = {
-    "dev-clean": "https://www.openslr.org/resources/12/dev-clean.tar.gz",
-    "dev-other": "https://www.openslr.org/resources/12/dev-other.tar.gz",
-    "test-clean": "https://www.openslr.org/resources/12/test-clean.tar.gz",
-    "test-other": "https://www.openslr.org/resources/12/test-other.tar.gz",
-    "train-clean-100": "https://www.openslr.org/resources/12/train-clean-100.tar.gz",
-    "train-clean-360": "https://www.openslr.org/resources/12/train-clean-360.tar.gz",
-    "train-other-500": "https://www.openslr.org/resources/12/train-other-500.tar.gz",
+    "dev-clean": "http://www.openslr.org/resources/12/dev-clean.tar.gz",
+    "dev-other": "http://www.openslr.org/resources/12/dev-other.tar.gz",
+    "test-clean": "http://www.openslr.org/resources/12/test-clean.tar.gz",
+    "test-other": "http://www.openslr.org/resources/12/test-other.tar.gz",
+    "train-clean-100": "http://www.openslr.org/resources/12/train-clean-100.tar.gz",
+    "train-clean-360": "http://www.openslr.org/resources/12/train-clean-360.tar.gz",
+    "train-other-500": "http://www.openslr.org/resources/12/train-other-500.tar.gz",
 }
 
 
