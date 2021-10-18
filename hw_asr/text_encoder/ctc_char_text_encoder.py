@@ -29,7 +29,7 @@ class CTCCharTextEncoder(CharTextEncoder):
             last_char_ind = ind
         return ''.join(self.ind2char[char_ind] for char_ind in output)
 
-    def ctc_beam_search(self, probs: torch.Tensor, probs_length,
+    def ctc_beam_search(self, probs: torch.Tensor,
                         beam_size: int = 100) -> List[Tuple[str, float]]:
         """
         Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
