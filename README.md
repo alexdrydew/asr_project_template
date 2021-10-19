@@ -2,10 +2,9 @@
 
 ## Installation guide
 
-< Write your installation guide here >
-
 ```shell
 pip install -r ./requirements.txt
+pip install https://github.com/kpu/kenlm/archive/master.zip
 ```
 
 ## Recommended implementation order
