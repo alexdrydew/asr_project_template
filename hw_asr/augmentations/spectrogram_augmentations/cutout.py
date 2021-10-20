@@ -1,6 +1,4 @@
 from torch import Tensor
-from albumentations import Cutout
-from albumentations.pytorch.transforms import ToTensorV2
 from numpy import random, clip
 
 from hw_asr.augmentations.base import AugmentationBase
@@ -9,8 +7,6 @@ from hw_asr.augmentations.base import AugmentationBase
 class CutOut(AugmentationBase):
     def __init__(self, rect_freq, rect_masks, rect_time, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cutout = Cutout(num_holes=rect_masks, max_h_size=rect_freq, max_w_size=rect_time)
-        self.to_tensor = ToTensorV2()
         self.rect_masks = rect_masks
         self.rect_freq = rect_freq
         self.rect_time = rect_time
