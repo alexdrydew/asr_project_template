@@ -210,16 +210,16 @@ class Trainer(BaseTrainer):
             inds[: int(ind_len)]
             for inds, ind_len in zip(argmax_inds, log_probs_length)
         ]
-        argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
-        argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
+        argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds[:examples_to_log]]
+        argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds[:examples_to_log]]
         beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
-                              for prob, length in zip(log_probs, log_probs_length)]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw, beams_search_texts))
+                              for prob, length in list(zip(log_probs, log_probs_length))[:examples_to_log]]
+        tuples = list(zip(argmax_texts, text[:examples_to_log], argmax_texts_raw, beams_search_texts))
         shuffle(tuples)
         to_log_pred = []
         to_log_pred_raw = []
         to_log_pred_beam_search = []
-        for pred, target, raw_pred, beam_search_pred in tuples[:examples_to_log]:
+        for pred, target, raw_pred, beam_search_pred in tuples:
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
             to_log_pred.append(
