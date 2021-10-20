@@ -202,7 +202,6 @@ class Trainer(BaseTrainer):
             *args,
             **kwargs,
     ):
-        # TODO: implement logging of beam search results
         if self.writer is None:
             return
         argmax_inds = log_probs.cpu().argmax(-1)
@@ -212,11 +211,14 @@ class Trainer(BaseTrainer):
         ]
         argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
         argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw))
+        beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
+                              for prob, length in zip(log_probs, log_probs_length)]
+        tuples = list(zip(argmax_texts, text, argmax_texts_raw, beams_search_texts))
         shuffle(tuples)
         to_log_pred = []
         to_log_pred_raw = []
-        for pred, target, raw_pred in tuples[:examples_to_log]:
+        to_log_pred_beam_search = []
+        for pred, target, raw_pred, beam_search_pred in tuples[:examples_to_log]:
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
             to_log_pred.append(
@@ -224,9 +226,19 @@ class Trainer(BaseTrainer):
                 f"| wer: {wer:.2f} | cer: {cer:.2f}"
             )
             to_log_pred_raw.append(f"true: '{target}' | pred: '{raw_pred}'\n")
+            bs_wer = calc_wer(target, beam_search_pred) * 100
+            bs_cer = calc_cer(target, beam_search_pred) * 100
+            to_log_pred_beam_search.append(
+                f"true: '{target}' | pred: '{beam_search_pred}' "
+                f"| wer: {bs_wer:.2f} | cer: {bs_cer:.2f}"
+            )
+
         self.writer.add_text(f"predictions", "< < < < > > > >".join(to_log_pred))
         self.writer.add_text(
             f"predictions_raw", "< < < < > > > >".join(to_log_pred_raw)
+        )
+        self.writer.add_text(
+            f"predictions_beam_search", "< < < < > > > >".join(to_log_pred_beam_search)
         )
 
     def _log_spectrogram(self, spectrogram_batch):

@@ -13,6 +13,5 @@ datasets
 torch_audiomentations
 editdistance
 wandb
-fast-ctc-decode
 torch_optimizer
-albumentations
+pyctcdecode
