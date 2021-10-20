@@ -204,7 +204,8 @@ class Trainer(BaseTrainer):
     ):
         if self.writer is None:
             return
-        argmax_inds = log_probs.cpu().argmax(-1)
+        log_probs = log_probs.cpu()
+        argmax_inds = log_probs.argmax(-1)
         argmax_inds = [
             inds[: int(ind_len)]
             for inds, ind_len in zip(argmax_inds, log_probs_length)
