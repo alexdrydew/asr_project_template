@@ -20,13 +20,6 @@ def _get_separable_conv_bn(in_channels, out_channels, kernel_size, stride=1, dil
     )
 
 
-def _get_conv_bn(in_channels, out_channels, kernel_size, stride=1, dilation=1):
-    return Sequential(
-        Conv1d(in_channels, out_channels, kernel_size, stride=stride, dilation=dilation, padding=kernel_size // 2),
-        BatchNorm1d(out_channels)
-    )
-
-
 class QuartzNet(BaseModel):
 
     class Block(nn.Module):
