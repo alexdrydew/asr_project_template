@@ -40,7 +40,7 @@ class CTCCharTextEncoder(CharTextEncoder):
         char_length, voc_size = probs.shape
         assert voc_size == len(self.ind2char)
 
-        beams = self.ctc_decoder.decode_beams(probs.cpu().numpy(), beam_width=beam_size)
+        beams = self.ctc_decoder.decode_beams(probs.detach().numpy(), beam_width=beam_size)
         hyps = [(beam[0], beam[-2]) for beam in beams]
 
         return sorted(hyps, key=lambda x: x[1], reverse=True)
