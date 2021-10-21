@@ -8,7 +8,7 @@ from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
 
 
 class CTCCharTextEncoder(CharTextEncoder):
-    EMPTY_TOK = "^"
+    EMPTY_TOK = ""
 
     def __init__(self, alphabet: List[str]):
         super().__init__(alphabet)
@@ -18,7 +18,7 @@ class CTCCharTextEncoder(CharTextEncoder):
         for text in alphabet:
             self.ind2char[max(self.ind2char.keys()) + 1] = text
         self.char2ind = {v: k for k, v in self.ind2char.items()}
-        self.ctc_decoder = build_ctcdecoder(alphabet)
+        self.ctc_decoder = build_ctcdecoder([self.EMPTY_TOK] + alphabet)
 
     def ctc_decode(self, inds: Union[List[int], torch.Tensor]) -> str:
         if isinstance(inds, torch.Tensor):

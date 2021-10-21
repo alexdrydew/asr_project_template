@@ -5,6 +5,8 @@
 ```shell
 pip install -r ./requirements.txt
 pip install https://github.com/kpu/kenlm/archive/master.zip
+
+Скачать https://github.com/karoldvl/ESC-50/archive/master.zip и распаковать в asr_project_template
 ```
 
 ## Recommended implementation order

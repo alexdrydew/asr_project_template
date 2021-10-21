@@ -19,7 +19,8 @@ def collate_fn(dataset_items: List[dict]):
         'text_encoded': [],
         'text_encoded_length': None,
         'text': None,
-        'spectrogram_length': None
+        'spectrogram_length': None,
+        'audio': None,
     }
 
     spectrogram_length = tensor([item['spectrogram'].shape[-1] for item in dataset_items])
@@ -29,6 +30,7 @@ def collate_fn(dataset_items: List[dict]):
     text_encoded_length = tensor([item['text_encoded'].shape[-1] for item in dataset_items])
     result_batch['text_encoded_length'] = text_encoded_length
     text_encoded_max_length = text_encoded_length.max().item()
+    result_batch['audio'] = [item['audio'] for item in dataset_items]
 
     for item in dataset_items:
         padded_spectrogram = pad(item['spectrogram'], (0, spectrogram_max_length - item['spectrogram'].shape[-1]))

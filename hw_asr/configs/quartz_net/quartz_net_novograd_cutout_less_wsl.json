@@ -6,6 +6,8 @@
     "spectrogram": {
       "type": "MelSpectrogram",
       "args": {
+        "n_fft": 512,
+        "n_mels": 64
       }
     }
   },
@@ -15,9 +17,9 @@
       {
         "type": "CutOut",
         "args":{
-          "rect_freq": 50,
-          "rect_masks": 5,
-          "rect_time": 120
+          "rect_freq": 25,
+          "rect_masks": 3,
+          "rect_time": 60
         }
       }
     ]
@@ -25,7 +27,7 @@
   "arch": {
     "type": "QuartzNet",
     "args": {
-      "n_feats": 128
+      "n_feats": 64
     }
   },
   "data": {

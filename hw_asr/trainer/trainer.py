@@ -33,6 +33,7 @@ class Trainer(BaseTrainer):
             lr_scheduler=None,
             len_epoch=None,
             skip_oom=True,
+            log_step=10,
     ):
         super().__init__(model, criterion, metrics, optimizer, config, device)
         self.skip_oom = skip_oom
@@ -49,7 +50,7 @@ class Trainer(BaseTrainer):
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
-        self.log_step = 10
+        self.log_step = log_step
 
         self.train_metrics = MetricTracker(
             "loss", "grad norm", *[m.name for m in self.metrics], writer=self.writer
@@ -116,6 +117,7 @@ class Trainer(BaseTrainer):
                 self._log_predictions(part="train", **batch)
                 self._log_spectrogram(batch["spectrogram"])
                 self._log_scalars(self.train_metrics)
+                self._log_audio(batch["audio"])
             if batch_idx >= self.len_epoch:
                 break
         log = self.train_metrics.result()
@@ -177,6 +179,7 @@ class Trainer(BaseTrainer):
             self._log_scalars(self.valid_metrics)
             self._log_predictions(part="val", **batch)
             self._log_spectrogram(batch["spectrogram"])
+            self._log_audio(batch["audio"])
 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
@@ -212,14 +215,11 @@ class Trainer(BaseTrainer):
         ]
         argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds[:examples_to_log]]
         argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds[:examples_to_log]]
-        beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
-                              for prob, length in list(zip(log_probs, log_probs_length))[:examples_to_log]]
-        tuples = list(zip(argmax_texts, text[:examples_to_log], argmax_texts_raw, beams_search_texts))
+        tuples = list(zip(argmax_texts, text[:examples_to_log], argmax_texts_raw))
         shuffle(tuples)
         to_log_pred = []
         to_log_pred_raw = []
-        to_log_pred_beam_search = []
-        for pred, target, raw_pred, beam_search_pred in tuples:
+        for pred, target, raw_pred in tuples:
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
             to_log_pred.append(
@@ -227,25 +227,38 @@ class Trainer(BaseTrainer):
                 f"| wer: {wer:.2f} | cer: {cer:.2f}"
             )
             to_log_pred_raw.append(f"true: '{target}' | pred: '{raw_pred}'\n")
-            bs_wer = calc_wer(target, beam_search_pred) * 100
-            bs_cer = calc_cer(target, beam_search_pred) * 100
-            to_log_pred_beam_search.append(
-                f"true: '{target}' | pred: '{beam_search_pred}' "
-                f"| wer: {bs_wer:.2f} | cer: {bs_cer:.2f}"
-            )
 
         self.writer.add_text(f"predictions", "< < < < > > > >".join(to_log_pred))
         self.writer.add_text(
             f"predictions_raw", "< < < < > > > >".join(to_log_pred_raw)
         )
-        self.writer.add_text(
-            f"predictions_beam_search", "< < < < > > > >".join(to_log_pred_beam_search)
-        )
+
+        if kwargs["part"] == 'val':
+            beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
+                                  for prob, length in list(zip(log_probs, log_probs_length))[:examples_to_log]]
+
+            to_log_pred_beam_search = []
+
+            for beam_search_pred, target in zip(beams_search_texts, text[:examples_to_log]):
+                bs_wer = calc_wer(target, beam_search_pred) * 100
+                bs_cer = calc_cer(target, beam_search_pred) * 100
+                to_log_pred_beam_search.append(
+                    f"true: '{target}' | pred: '{beam_search_pred}' "
+                    f"| wer: {bs_wer:.2f} | cer: {bs_cer:.2f}"
+                )
+
+            self.writer.add_text(
+                f"predictions_beam_search", "< < < < > > > >".join(to_log_pred_beam_search)
+            )
 
     def _log_spectrogram(self, spectrogram_batch):
         spectrogram = random.choice(spectrogram_batch)
         image = PIL.Image.open(plot_spectrogram_to_buf(spectrogram.cpu().log()))
         self.writer.add_image("spectrogram", ToTensor()(image))
+
+    def _log_audio(self, wave_batch):
+        wave = random.choice(wave_batch)
+        self.writer.add_audio("audio", wave, sample_rate=self.config["preprocessing"]["sr"])
 
     @torch.no_grad()
     def get_grad_norm(self, norm_type=2):
