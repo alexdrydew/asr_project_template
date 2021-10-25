@@ -1,0 +1,131 @@
+{
+  "name": "default_config",
+  "n_gpu": 1,
+  "preprocessing": {
+    "sr": 16000,
+    "spectrogram": {
+      "type": "MelSpectrogram",
+      "args": {
+        "n_fft": 512,
+        "n_mels": 64
+      }
+    }
+  },
+  "augmentations": {
+    "wave": [
+      {
+        "type": "AddColoredNoise",
+        "args":{
+          "sample_rate": 16000
+        }
+      },
+      {
+        "type": "PitchShift",
+        "args":{
+          "sample_rate": 16000
+        }
+      }
+    ],
+    "spectrogram": [
+      {
+        "type": "CutOut",
+        "args":{
+          "rect_freq": 30,
+          "rect_masks": 4,
+          "rect_time": 80
+        }
+      }
+    ]
+  },
+  "arch": {
+    "type": "QuartzNet",
+    "args": {
+      "n_feats": 64
+    }
+  },
+  "data": {
+    "train": {
+      "batch_size": 64,
+      "num_workers": 4,
+      "datasets": [
+        {
+          "type": "LibrispeechDataset",
+          "args": {
+            "part": "train-clean-100",
+            "max_audio_length": 30.0,
+            "max_text_length": 300,
+            "data_dir": "~/librispeech"
+          }
+        },
+        {
+          "type": "LibrispeechDataset",
+          "args": {
+            "part": "train-clean-360",
+            "max_audio_length": 30.0,
+            "max_text_length": 300,
+            "data_dir": "~/librispeech"
+          }
+        }
+      ]
+    },
+    "val": {
+      "batch_size": 64,
+      "num_workers": 4,
+      "datasets": [
+        {
+          "type": "LibrispeechDataset",
+          "args": {
+            "part": "dev-clean",
+            "max_audio_length": 30.0,
+            "max_text_length": 300,
+            "data_dir": "~/librispeech"
+          }
+        }
+      ]
+    }
+  },
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 5e-5
+    }
+  },
+  "loss": {
+    "type": "CTCLoss",
+    "args": {}
+  },
+  "metrics": [
+    {
+      "type": "ArgmaxWERMetric",
+      "args": {
+        "name": "WER (argmax)"
+      }
+    },
+    {
+      "type": "ArgmaxCERMetric",
+      "args": {
+        "name": "CER (argmax)"
+      }
+    }
+  ],
+  "lr_scheduler": {
+    "type": "StepLR",
+    "args": {
+      "step_size": 100,
+      "gamma": 0.95
+    }
+  },
+  "trainer": {
+    "epochs": 500,
+    "save_dir": "saved/",
+    "save_period": 5,
+    "verbosity": 2,
+    "monitor": "min val_loss",
+    "early_stop": 100,
+    "visualize": "wandb",
+    "wandb_project": "asr_project",
+    "len_epoch": 100,
+    "grad_norm_clip": 10,
+    "log_step": 10
+  }
+}

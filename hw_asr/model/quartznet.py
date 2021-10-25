@@ -55,7 +55,7 @@ class QuartzNet(BaseModel):
         self.b_5 = QuartzNet.Block(512, 512, 75, R=5)
         self.c_2 = _get_separable_conv_bn(512, 512, 87)
         self.c_3 = _get_separable_conv_bn(512, 1024, 1)
-        self.c_4 = Conv1d(1024, n_class, 1, dilation=2)
+        self.c_4 = Conv1d(1024, n_class, 1, dilation=2, bias=False)
 
         self.activation = ReLU()
 
