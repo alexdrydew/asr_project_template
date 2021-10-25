@@ -6,7 +6,7 @@ tqdm
 tensorboard
 soundfile
 matplotlib
-pandas
+pandas==1.2.4
 speechbrain~=0.5.9
 torchaudio~=0.9.1
 datasets
