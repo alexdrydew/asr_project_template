@@ -234,23 +234,22 @@ class Trainer(BaseTrainer):
         )
 
         if kwargs["part"] == 'val':
-            pass
-            # beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
-            #                       for prob, length in list(zip(log_probs, log_probs_length))[:examples_to_log]]
-            #
-            # to_log_pred_beam_search = []
-            #
-            # for beam_search_pred, target in zip(beams_search_texts, text[:examples_to_log]):
-            #     bs_wer = calc_wer(target, beam_search_pred) * 100
-            #     bs_cer = calc_cer(target, beam_search_pred) * 100
-            #     to_log_pred_beam_search.append(
-            #         f"true: '{target}' | pred: '{beam_search_pred}' "
-            #         f"| wer: {bs_wer:.2f} | cer: {bs_cer:.2f}"
-            #     )
-            #
-            # self.writer.add_text(
-            #     f"predictions_beam_search", "< < < < > > > >".join(to_log_pred_beam_search)
-            # )
+            beams_search_texts = [self.text_encoder.ctc_beam_search(prob[:length])[0][0]
+                                  for prob, length in list(zip(log_probs, log_probs_length))[:examples_to_log]]
+
+            to_log_pred_beam_search = []
+
+            for beam_search_pred, target in zip(beams_search_texts, text[:examples_to_log]):
+                bs_wer = calc_wer(target, beam_search_pred) * 100
+                bs_cer = calc_cer(target, beam_search_pred) * 100
+                to_log_pred_beam_search.append(
+                    f"true: '{target}' | pred: '{beam_search_pred}' "
+                    f"| wer: {bs_wer:.2f} | cer: {bs_cer:.2f}"
+                )
+
+            self.writer.add_text(
+                f"predictions_beam_search", "< < < < > > > >".join(to_log_pred_beam_search)
+            )
 
     def _log_spectrogram(self, spectrogram_batch):
         spectrogram = random.choice(spectrogram_batch)
