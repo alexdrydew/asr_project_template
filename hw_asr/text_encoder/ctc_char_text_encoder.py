@@ -1,9 +1,11 @@
 from typing import List, Tuple, Union
 from collections import defaultdict
 from pyctcdecode import build_ctcdecoder
+import youtokentome as yttm
+import numpy as np
+from torch import Tensor
 
 import torch
-import kenlm
 
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
 from hw_asr.utils import ROOT_PATH
@@ -12,7 +14,9 @@ from hw_asr.utils import ROOT_PATH
 class CTCCharTextEncoder(CharTextEncoder):
     EMPTY_TOK = ""
 
-    def __init__(self, alphabet: List[str]):
+    def __init__(self, alphabet: List[str], bpe=True):
+        self.bpe = bpe
+        print('alphabet:', alphabet)
         super().__init__(alphabet)
         self.ind2char = {
             0: self.EMPTY_TOK
@@ -20,8 +24,18 @@ class CTCCharTextEncoder(CharTextEncoder):
         for text in alphabet:
             self.ind2char[max(self.ind2char.keys()) + 1] = text
         self.char2ind = {v: k for k, v in self.ind2char.items()}
-        kenlm_model = kenlm.Model(str(ROOT_PATH / "3-gram.arpa"))
-        self.ctc_decoder = build_ctcdecoder([self.EMPTY_TOK] + alphabet, str(ROOT_PATH / "3-gram.arpa"))
+        self.ctc_decoder = build_ctcdecoder([self.EMPTY_TOK] + alphabet)#, str(ROOT_PATH / "3-gram.arpa"))
+
+    def encode(self, text) -> Tensor:
+        if self.bpe:
+            return Tensor([ind + 1 for ind in self.bpe.encode(text)]).unsqueeze(0)
+        return super().encode(text)
+
+    def decode(self, vector: Union[Tensor, np.ndarray, List[int]]):
+        if self.bpe:
+            raw_decode = super().decode(vector)
+            return raw_decode.replace('▁', ' ').lstrip().rstrip()
+        return super().decode(vector)
 
     def ctc_decode(self, inds: Union[List[int], torch.Tensor]) -> str:
         if isinstance(inds, torch.Tensor):
@@ -32,7 +46,7 @@ class CTCCharTextEncoder(CharTextEncoder):
             if ind != self.char2ind[self.EMPTY_TOK] and ind != last_char_ind:
                 output.append(ind)
             last_char_ind = ind
-        return ''.join(self.ind2char[char_ind] for char_ind in output)
+        return self.decode(output)
 
     def ctc_beam_search(self, probs: torch.Tensor,
                         beam_size: int = 100) -> List[Tuple[str, float]]:
@@ -47,3 +61,9 @@ class CTCCharTextEncoder(CharTextEncoder):
         hyps = [(beam[0], beam[-2]) for beam in beams]
 
         return sorted(hyps, key=lambda x: x[1], reverse=True)
+
+    @classmethod
+    def from_bpe(cls):
+        bpe = yttm.BPE(model=str(ROOT_PATH / "bpe.model"))
+        return cls(alphabet=bpe.vocab(), bpe=bpe)
+

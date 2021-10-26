@@ -115,6 +115,9 @@ class ConfigParser:
         """Access items like ordinary dict."""
         return self.config[name]
 
+    def __contains__(self, item):
+        return item in self.config
+
     def get_logger(self, name, verbosity=2):
         msg_verbosity = "verbosity option {} is invalid. Valid options are {}.".format(
             verbosity, self.log_levels.keys()
