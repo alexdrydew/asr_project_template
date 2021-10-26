@@ -24,7 +24,7 @@ class CTCCharTextEncoder(CharTextEncoder):
         for text in alphabet:
             self.ind2char[max(self.ind2char.keys()) + 1] = text
         self.char2ind = {v: k for k, v in self.ind2char.items()}
-        self.ctc_decoder = build_ctcdecoder([self.EMPTY_TOK] + alphabet)#, str(ROOT_PATH / "3-gram.arpa"))
+        self.ctc_decoder = build_ctcdecoder([self.EMPTY_TOK] + alphabet, str(ROOT_PATH / "3-gram.arpa"))
 
     def encode(self, text) -> Tensor:
         if self.bpe:
