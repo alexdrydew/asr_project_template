@@ -14,7 +14,7 @@ from hw_asr.utils import ROOT_PATH
 class CTCCharTextEncoder(CharTextEncoder):
     EMPTY_TOK = ""
 
-    def __init__(self, alphabet: List[str], bpe=True):
+    def __init__(self, alphabet: List[str], bpe=None):
         self.bpe = bpe
         print('alphabet:', alphabet)
         super().__init__(alphabet)

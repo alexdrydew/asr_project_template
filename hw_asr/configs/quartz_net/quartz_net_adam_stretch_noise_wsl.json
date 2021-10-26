@@ -1,8 +1,8 @@
 {
-  "name": "default_config",
+  "name": "quartz_net_adam_more_augs_wsl",
   "n_gpu": 1,
   "preprocessing": {
-    "sr": 16000,
+    "sr": 20000,
     "spectrogram": {
       "type": "MelSpectrogram",
       "args": {
@@ -16,13 +16,19 @@
       {
         "type": "AddColoredNoise",
         "args":{
-          "sample_rate": 16000
+          "sample_rate": 20000
         }
       },
       {
         "type": "PitchShift",
         "args":{
-          "sample_rate": 16000
+          "sample_rate": 20000
+        }
+      },
+      {
+        "type": "Gain",
+        "args":{
+          "sample_rate": 20000
         }
       }
     ],
@@ -30,9 +36,9 @@
       {
         "type": "CutOut",
         "args":{
-          "rect_freq": 30,
-          "rect_masks": 4,
-          "rect_time": 80
+          "rect_freq": 40,
+          "rect_masks": 5,
+          "rect_time": 100
         }
       }
     ]
@@ -112,7 +118,7 @@
     "type": "StepLR",
     "args": {
       "step_size": 100,
-      "gamma": 0.95
+      "gamma": 0.99
     }
   },
   "trainer": {
@@ -127,5 +133,8 @@
     "len_epoch": 100,
     "grad_norm_clip": 10,
     "log_step": 10
+  },
+  "text_encoder": {
+    "use_bpe": true
   }
 }
