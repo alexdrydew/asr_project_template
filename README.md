@@ -6,7 +6,11 @@
 pip install -r ./requirements.txt
 pip install https://github.com/kpu/kenlm/archive/master.zip
 
-Скачать https://github.com/karoldvl/ESC-50/archive/master.zip и распаковать в asr_project_template
+Скачать https://github.com/karoldvl/ESC-50/archive/master.zip и распаковать 
+в asr_project_template для того чтобы работал AddBackgroundNoise, но для модели это не нужно
+
+!wget https://www.openslr.org/resources/11/3-gram.arpa.gz
+!gzip 3-gram.arpa.gz
 ```
 
 ## Recommended implementation order
