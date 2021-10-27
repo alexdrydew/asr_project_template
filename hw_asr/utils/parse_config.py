@@ -15,7 +15,7 @@ class ConfigParser:
         """
         class to parse configuration json file. Handles hyperparameters for training, initializations of modules, checkpoint saving
         and logging module.
-        :param config: Dict containing configurations, hyperparameters for training. contents of `config.json` file for example.
+        :param config: Dict containing configurations, hyperparameters for training. contents of `default_test_config.json` file for example.
         :param resume: String, path to the checkpoint being loaded.
         :param modification: Dict keychain:value, specifying position values to be replaced from config dict.
         :param run_id: Unique Identifier for training processes. Used to save checkpoints and training log. Timestamp is being used as default
@@ -39,7 +39,7 @@ class ConfigParser:
         self.log_dir.mkdir(parents=True, exist_ok=exist_ok)
 
         # save updated config file to the checkpoint dir
-        write_json(self.config, self.save_dir / "config.json")
+        write_json(self.config, self.save_dir / "default_test_config.json")
 
         # configure logging module
         setup_logging(self.log_dir)
@@ -59,9 +59,9 @@ class ConfigParser:
             os.environ["CUDA_VISIBLE_DEVICES"] = args.device
         if args.resume is not None:
             resume = Path(args.resume)
-            cfg_fname = resume.parent / "config.json"
+            cfg_fname = resume.parent / "default_test_config.json"
         else:
-            msg_no_cfg = "Configuration file need to be specified. Add '-c config.json', for example."
+            msg_no_cfg = "Configuration file need to be specified. Add '-c default_test_config.json', for example."
             assert args.config is not None, msg_no_cfg
             resume = None
             cfg_fname = Path(args.config)
@@ -142,7 +142,7 @@ class ConfigParser:
 
     @classmethod
     def get_default_configs(cls):
-        config_path = ROOT_PATH / 'hw_asr' / 'config.json'
+        config_path = ROOT_PATH / 'hw_asr' / 'default_test_config.json'
         with config_path.open() as f:
             return cls(json.load(f))
 

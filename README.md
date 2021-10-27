@@ -2,16 +2,19 @@
 
 ## Installation guide
 
+python3.8, linux (мак тоже не подходит, разве что если в системе gcc, а не clang)
+
 ```shell
 pip install -r ./requirements.txt
 pip install https://github.com/kpu/kenlm/archive/master.zip
 
-Скачать https://github.com/karoldvl/ESC-50/archive/master.zip и распаковать 
-в asr_project_template для того чтобы работал AddBackgroundNoise, но для модели это не нужно
+wget https://github.com/karoldvl/ESC-50/archive/master.zip
+unzip master.zip
 
 wget https://www.openslr.org/resources/11/3-gram.arpa.gz
-gzip 3-gram.arpa.gz
-mv 3-gram.arpa.gz 3-gram.arpa
+gunzip 3-gram.arpa.gz
+
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1hC0HbwZ3dfhEYYvozUa-8rHjZl9QZwf6' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1hC0HbwZ3dfhEYYvozUa-8rHjZl9QZwf6" -O default_test_model/checkpoint.pth && rm -rf /tmp/cookies.txt
 ```
 
 ## Recommended implementation order
